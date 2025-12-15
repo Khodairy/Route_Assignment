@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "name": "Abdullah Khodairy",
+    "email": "abdullah1@example.com",
+    "age": 23
+  },
+  {
+    "id": 2,
+    "name": "Sara Ahmed",
+    "email": "sara2@example.com",
+    "age": 25
+  },
+  {
+    "id": 3,
+    "name": "Mohamed Ali",
+    "email": "mohamed3@example.com",
+    "age": 28
+  },
+  {
+    "id": 4,
+    "name": "Laila Hassan",
+    "email": "laila4@example.com",
+    "age": 32
+  },
+  {
+    "id": 5,
+    "name": "Omar Khaled",
+    "email": "omar5@example.com",
+    "age": 27
+  },
+  {
+    "id": 6,
+    "name": "Nour Samir",
+    "email": "nour6@example.com",
+    "age": 29
+  },
+  {
+    "id": 7,
+    "name": "Youssef Adel",
+    "email": "youssef7@example.com",
+    "age": 31
+  },
+  {
+    "id": 8,
+    "name": "Mona Tarek",
+    "email": "mona8@example.com",
+    "age": 26
+  },
+  {
+    "id": 9,
+    "name": "Hassan Mahmoud",
+    "email": "hassan9@example.com",
+    "age": 34
+  },
+  {
+    "id": 10,
+    "name": "Fatma Salah",
+    "email": "fatma10@example.com",
+    "age": 24
+  }
+]
