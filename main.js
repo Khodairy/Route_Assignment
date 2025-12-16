@@ -87,11 +87,41 @@ users = JSON.parse(users);
 
 // ============== Handle Requests ==============
 let server = http.createServer((req, res) => {
-  // ========= GET Users =========
+  // ========= GET All Users =========
   if (req.method === "GET" && req.url === "/user") {
     res.writeHead(200, { "content-type": "application/json" });
     res.write(JSON.stringify({ statusCode: 200, data: users }));
     return res.end();
+  }
+  // ========= GET User By Id =========
+  if (req.method === "GET" && req.url.startsWith("/user/")) {
+    const id = Number(req.url.split("/")[2]);
+
+    // check valid id
+    if (isNaN(id)) {
+      res.writeHead(400, { "content-type": "application/json" });
+      return res.end(
+        JSON.stringify({
+          statusCode: 400,
+          message: "Invalid user id",
+        })
+      );
+    }
+    const userIndex = users.findIndex((user) => user.id === id);
+
+    if (userIndex === -1) {
+      res.writeHead(404, { "content-type": "application/json" });
+      return res.end(
+        JSON.stringify({
+          statusCode: 404,
+          message: "User not found",
+        })
+      );
+    } else {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.write(JSON.stringify({ statusCode: 200, data: users[userIndex] }));
+      return res.end();
+    }
   }
   // ========= POST Users =========
   else if (req.method === "POST" && req.url === "/user") {
@@ -150,27 +180,31 @@ let server = http.createServer((req, res) => {
     });
 
     req.on("end", () => {
-      let parsingNewUser = ``;
-      parsingNewUser = JSON.parse(newUser);
+      let { id, name, email, age } = JSON.parse(newUser);
 
-      // ========== check if the user found in json file ========
-      let userExist = users.find((user) => {
-        return user.email === parsingNewUser.email;
+      // ========== check if the userId found in json file ========
+      let userIndex = users.findIndex((user) => {
+        return user.id === id;
       });
-      if (userExist) {
-        // ======== if the user found =========
-        res.writeHead(409, { "content-type": "application/json" });
+      if (userIndex === -1) {
+        // ======== if the user not found =======
+        res.writeHead(404, { "content-type": "application/json" });
         res.write(
           JSON.stringify({
-            statusCode: 409,
-            message: "the user is already exist",
+            statusCode: 404,
+            message: "User not found",
           })
         );
         return res.end();
       } else {
-        // ======== if the user not found =======
+        // ======== if the user found =========
         // ===== add user to users array =====
-        users.push(parsingNewUser);
+        users[userIndex] = {
+          ...users[userIndex],
+          ...(name && { name }),
+          ...(email && { email }),
+          ...(age && { age }),
+        };
         // ===== add user to json file =======
         fs.writeFileSync(
           path.resolve("./user.json"),
@@ -183,7 +217,57 @@ let server = http.createServer((req, res) => {
         res.write(
           JSON.stringify({
             statusCode: 200,
-            message: "a new user added successfully",
+            message: "the user updated successfully",
+          })
+        );
+        return res.end();
+      }
+    });
+  }
+  // ========= DELETE Users by id =========
+  else if (req.method === "DELETE" && req.url === "/user") {
+    // ====== get the user witch added for check ====
+    let id = ``;
+    req.on("data", (chunk) => {
+      id += chunk;
+    });
+
+    req.on("end", () => {
+      const { id: userId } = JSON.parse(id);
+
+      // ========== check if the userId found in json file ========
+      let userIndex = users.findIndex((user) => {
+        return user.id === userId;
+      });
+      if (userIndex === -1) {
+        // ======== if the user not found =======
+        res.writeHead(404, { "content-type": "application/json" });
+        res.write(
+          JSON.stringify({
+            statusCode: 404,
+            message: "User not found",
+          })
+        );
+        return res.end();
+      } else {
+        // ======== if the user found =========
+        // ===== add user to users array =====
+        const deletedUser = users.splice(userIndex, 1);
+
+        // ===== add user to json file =======
+        fs.writeFileSync(
+          path.resolve("./user.json"),
+          JSON.stringify(users, null, 2),
+          {
+            encoding: "utf-8",
+          }
+        );
+        res.writeHead(200, { "content-type": "application/json" });
+        res.write(
+          JSON.stringify({
+            statusCode: 200,
+            message: "User deleted successfully",
+            data: deletedUser[0],
           })
         );
         return res.end();
@@ -208,12 +292,6 @@ server.listen(port, () => {
 // ============== Handle Close server ==============
 server.on("close", () => {
   console.log("Server is closed");
-
-  fs.writeFileSync(
-    path.resolve("./logs.txt"),
-    `\nServer is closed at ${new Date().toLocaleString()}`,
-    { flags: "a" }
-  );
 });
 
 // ============== Handle Errors ==============
