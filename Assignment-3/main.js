@@ -308,10 +308,39 @@ server.on("error", (error) => {
 });
 
 // =====================================================================================
+// =====================================================================================
+// =====================================================================================
 
 // ===================================== Part 3 ========================================
+// 1. What is the Node.js Event Loop?
+//====> The Node.js Event Loop is the core mechanism that allows Node.
+//      js to handle many operations concurrently using a single thread, without blocking execution.
 
-// solution in bonus.js file
+// 2. What is Libuv and What Role Does It Play in Node.js?
+//====> Libuv is a C-based library that acts as the engine room of Node.js.
+//      It provides the infrastructure needed to handle asynchronous operations.
+
+// 3. How Does Node.js Handle Asynchronous Operations Under the Hood?
+//====> Node.js handles asynchronous operations using a single-threaded event loop powered by Libuv.
+//      it store asynchronous operations in a queues and start to execute
+//      this operations in order after executing all of synchronous operations.
+
+// 4. What is the Difference Between the Call Stack, Event Queue, and Event Loop in Node.js?
+//====> - Call Stack executes synchronous JavaScript code immediately
+//      - Event Queue holds callbacks from completed async operations waiting to run.
+//      - Event Loop monitors the Call Stack and moves callbacks from the Event Queue to the stack when it’s empty.
+
+// 5. What is the Node.js Thread Pool and How to Set the Thread Pool Size?
+//====> The Node.js Thread Pool is a set of worker threads managed by Libuv to handle CPU-intensive
+//      or blocking tasks (such as fs, crypto, and zlib) without blocking the Event Loop.
+
+// 6. How Does Node.js Handle Blocking and Non-Blocking Code Execution?
+//====> - Node.js executes blocking (synchronous) code directly on the Call Stack, which can pause the Event Loop and delay other tasks.
+//      - Non-blocking (asynchronous) operations are delivered to Libuv and executed later by the Event Loop.
+
+// =====================================================================================
+// =====================================================================================
+// =====================================================================================
 
 // ===================================== Part 4 ========================================
 
