@@ -19,7 +19,7 @@ export const checkSyncDB = async () => {
   try {
     await sequelize.authenticate();
     console.log("Sync to DB Successfully....😊");
-    sequelize.sync({ alter: false });
+    sequelize.sync({ alter: false, force: false });
   } catch (error) {
     console.error("Unable to Sync to the database:", error);
   }
