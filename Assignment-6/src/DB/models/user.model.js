@@ -1,18 +1,23 @@
-const { Sequelize, Model, DataTypes } = require("sequelize");
-const sequelize = new Sequelize("sqlite::memory:");
-
+import { DataTypes } from "sequelize";
+import { sequelize } from "../connectionDB.js";
 export const userModel = sequelize.define("user", {
   id: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     primaryKey: true,
+    autoIncrement: true,
   },
-  fname: {
+  full_name: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  lname: {
-    type: DataTypes.STRING,
-    allowNull: false,
+
+    // =================== cheack the length of name =============
+    validate: {
+      checkNameLength(value) {
+        if (value.length <= 3) {
+          throw new Error("the name length must be greater than 2 characters");
+        }
+      },
+    },
   },
   email: {
     type: DataTypes.STRING,
@@ -23,17 +28,20 @@ export const userModel = sequelize.define("user", {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
+    // =================== cheack the length of the password =============
+    validate: {
+      checkPasswordLength(value) {
+        if (value.length <= 6) {
+          throw new Error(
+            "the password length must be greater than 6 characters",
+          );
+        }
+      },
+    },
   },
-  gender: {
-    type: DataTypes.ENUM("male", "female"),
-  },
+  role: { type: DataTypes.ENUM("user", "admin") },
   age: {
     type: DataTypes.INTEGER,
     validate: { min: 0 },
   },
 });
-
-(async () => {
-  await sequelize.sync({ alter: true, force: true });
-  // Code here
-})();
