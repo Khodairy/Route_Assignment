@@ -1,0 +1,182 @@
+use myProjectDB
+
+===== 1 =====
+db.collection("books")
+db.runCommand({
+  collMod: "books",
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["title"],
+      properties: {
+        title: {
+          bsonType: "string",
+          description: "Title is required and must be a string"
+        }
+      }
+    }
+  }
+});
+
+
+
+===== 2 =====
+db.authors.insertOne({name: "Abdallah Khodairy", nationality: "Egyption"})
+
+
+
+===== 3 =====
+db.createCollection("logs", {
+      capped: true,
+      size: 1048576, // 1MB
+    });
+db.logs.stats().capped  // true
+db.logs.insertOne({message: "User logged in"})
+
+
+
+===== 4 =====
+db.books.createIndex({ title: 1 });
+
+
+
+
+===== 5 =====
+db.books.insertOne({title: "Book 6", author: "Author 6"})
+
+
+
+
+===== 6 =====
+db.books.insertMany([
+    {
+        "title":"Book 11",
+        "author": "Mohamed Ahmed",
+        "year": "2025",
+        "genres": ["Science Fiction","Fantasy" ]
+    },
+    {
+        "title":"Book 12",
+        "author": "Ali Ibrahim",
+        "year": "2026",
+        "genres": ["Science Fiction" ]
+    },
+    {
+        "title":"Book 13",
+        "author": "Abdelrahmn Ragab",
+        "year": "2026",
+        "genres": ["Science Fiction","Fantasy" ]
+    }
+])
+
+
+
+===== 7 =====
+db.logs.insertOne(
+  {
+    "book_id": "535254af32525",
+    "action": "User logged in"
+  }
+)
+
+
+
+===== 8 =====
+db.books.updateOne(
+      { title: Future },
+      { $set: 2022 },
+    )
+
+
+
+===== 9 =====
+db.books.find({ title: Future })
+
+
+
+===== 10 =====
+db.books.find({ year: { $gte: 1990, $lte: 2010 } })
+
+
+
+===== 11 =====
+db.books.find({ genres: { $in: ["Science Fiction", "Fantasy"] } })
+
+
+
+
+===== 12 =====
+db.books.aggregate([
+        { $sort: { year: -1 } },
+        { $skip: 2 },
+        { $limit: 3 },
+      ])
+
+
+
+===== 13 =====
+db.books.aggregate([
+        {
+          $match: { year: { $type: "int" } },
+        },
+      ])
+
+
+
+===== 14 =====
+db.books.find({
+        genres: { $nin: ["Horror", "Science Fiction"] },
+      })
+
+
+
+===== 15 =====
+db.books.deleteOne({ year: { $eq: 2026 } })
+
+
+
+
+===== 16 =====
+db.books.aggregate([
+        { $match: { year: { $gt: "2000" } } },
+        { $sort: { year: -1 } },
+      ])
+
+
+
+
+===== 17 =====
+db.books.aggregate([
+        { $match: { year: { $gt: "2000" } } },
+        { $project: { title: 1, author: 1, year: 1, _id: 0 } },
+      ])
+
+
+
+
+===== 18 =====
+db.books.aggregate([
+        { $unwind: "$genres" },
+        { $project: { title: 1, genres: 1, _id: 0 } },
+      ])
+
+
+
+===== 19 =====
+db.logs.aggregate([
+        {
+          $lookup: {
+            from: "books",
+            localField: "book_id",
+            foreignField: "_id",
+            as: "book_details",
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            book_id: 0,
+          },
+        },
+      ])
+
